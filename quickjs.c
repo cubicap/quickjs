@@ -28,13 +28,16 @@
 #include <inttypes.h>
 #include <string.h>
 #include <assert.h>
+#if defined(ESP_PLATFORM)
+#define __TM_GMTOFF tm_gmtoff
+#endif
 #include <sys/time.h>
 #include <time.h>
 #include <fenv.h>
 #include <math.h>
 #if defined(__APPLE__)
 #include <malloc/malloc.h>
-#elif defined(__linux__)
+#elif defined(__linux__) || defined(ESP_PLATFORM)
 #include <malloc.h>
 #elif defined(__FreeBSD__)
 #include <malloc_np.h>
@@ -1682,7 +1685,7 @@ static inline size_t js_def_malloc_usable_size(void *ptr)
     return _msize(ptr);
 #elif defined(EMSCRIPTEN)
     return 0;
-#elif defined(__linux__)
+#elif defined(__linux__) || defined(ESP_PLATFORM)
     return malloc_usable_size(ptr);
 #else
     /* change this to `return 0;` if compilation fails */
@@ -1756,7 +1759,7 @@ static const JSMallocFunctions def_malloc_funcs = {
     (size_t (*)(const void *))_msize,
 #elif defined(EMSCRIPTEN)
     NULL,
-#elif defined(__linux__)
+#elif defined(__linux__) || defined(ESP_PLATFORM)
     (size_t (*)(const void *))malloc_usable_size,
 #else
     /* change this to `NULL,` if compilation fails */
